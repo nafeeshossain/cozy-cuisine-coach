@@ -60,8 +60,13 @@ export const WelcomeHero = ({ onStartPlanning }: WelcomeHeroProps) => {
             >
               Start Your Journey 🌟
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-              Learn More
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onStartPlanning}
+              className="text-lg px-8 py-6"
+            >
+              Sign In
             </Button>
           </div>
 
