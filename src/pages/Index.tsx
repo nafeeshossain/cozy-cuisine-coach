@@ -1,14 +1,44 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { WelcomeHero } from "@/components/WelcomeHero";
+import { PreferencesForm } from "@/components/PreferencesForm";
+import { MealPlanDashboard } from "@/components/MealPlanDashboard";
+
+interface UserPreferences {
+  name: string;
+  dietType: string[];
+  allergies: string;
+  favoritefoods: string;
+  dislikes: string;
+  goals: string[];
+  calorieTarget: string;
+}
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'preferences' | 'dashboard'>('welcome');
+  const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
+
+  const handleStartPlanning = () => {
+    setCurrentStep('preferences');
+  };
+
+  const handlePreferencesComplete = (preferences: UserPreferences) => {
+    setUserPreferences(preferences);
+    setCurrentStep('dashboard');
+  };
+
+  if (currentStep === 'welcome') {
+    return <WelcomeHero onStartPlanning={handleStartPlanning} />;
+  }
+
+  if (currentStep === 'preferences') {
+    return <PreferencesForm onComplete={handlePreferencesComplete} />;
+  }
+
+  if (currentStep === 'dashboard' && userPreferences) {
+    return <MealPlanDashboard preferences={userPreferences} />;
+  }
+
+  return null;
 };
 
 export default Index;
