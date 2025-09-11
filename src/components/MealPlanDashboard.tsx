@@ -1,21 +1,55 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, Users, Utensils, Heart, Star, Award, Sparkles } from "lucide-react";
-
-interface UserPreferences {
-  name: string;
-  dietType: string[];
-  goals: string[];
-}
+import { Clock, Users, Utensils, Heart, Star, Award, Sparkles, RefreshCw } from "lucide-react";
+import { useMealPlan } from "@/hooks/useMealPlan";
+import type { UserPreferences } from "@/hooks/useProfile";
 
 interface MealPlanDashboardProps {
   preferences: UserPreferences;
 }
 
 export const MealPlanDashboard = ({ preferences }: MealPlanDashboardProps) => {
-  const weeklyMeals = [
+  const { mealPlan, isLoading, generateMealPlan } = useMealPlan();
+
+  useEffect(() => {
+    // Generate initial meal plan when component mounts
+    if (!mealPlan) {
+      generateMealPlan(preferences);
+    }
+  }, [preferences]);
+
+  const handleGenerateNewPlan = () => {
+    generateMealPlan(preferences);
+  };
+
+  // Use generated meal plan or fallback to mock data
+  const weeklyPlan = mealPlan?.weeklyPlan || {};
+  const days = Object.keys(weeklyPlan);
+  
+  const weeklyMeals = days.length > 0 ? days.map(day => ({
+    day,
+    breakfast: { 
+      name: weeklyPlan[day].breakfast.name, 
+      calories: weeklyPlan[day].breakfast.calories, 
+      time: weeklyPlan[day].breakfast.prepTime, 
+      rating: weeklyPlan[day].breakfast.rating 
+    },
+    lunch: { 
+      name: weeklyPlan[day].lunch.name, 
+      calories: weeklyPlan[day].lunch.calories, 
+      time: weeklyPlan[day].lunch.prepTime, 
+      rating: weeklyPlan[day].lunch.rating 
+    },
+    dinner: { 
+      name: weeklyPlan[day].dinner.name, 
+      calories: weeklyPlan[day].dinner.calories, 
+      time: weeklyPlan[day].dinner.prepTime, 
+      rating: weeklyPlan[day].dinner.rating 
+    }
+  })) : [
     {
       day: "Monday",
       breakfast: { name: "Berry Smoothie Bowl", calories: 320, time: "10 min", rating: 4.8 },
@@ -153,9 +187,19 @@ export const MealPlanDashboard = ({ preferences }: MealPlanDashboardProps) => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button variant="hero" size="lg" className="gap-2">
-            <Sparkles className="w-5 h-5" />
-            Generate New Plan
+          <Button 
+            variant="hero" 
+            size="lg" 
+            className="gap-2"
+            onClick={handleGenerateNewPlan}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <RefreshCw className="w-5 h-5 animate-spin" />
+            ) : (
+              <Sparkles className="w-5 h-5" />
+            )}
+            {isLoading ? 'Generating...' : 'Generate New Plan'}
           </Button>
           <Button variant="warm" size="lg" className="gap-2">
             <Users className="w-5 h-5" />
