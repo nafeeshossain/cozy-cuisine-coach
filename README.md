@@ -54,4 +54,4 @@ Make sure you have installed:
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/<your-username>/cozy-cuisine-coach.git
+   git clone https://github.com/nafeeshossain/cozy-cuisine-coach.git
